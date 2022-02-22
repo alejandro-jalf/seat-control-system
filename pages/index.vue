@@ -44,16 +44,19 @@
         Deshabilitadas
       </div>
     </div>
+    <OptionChair v-if="dialog" />
   </div>
 </template>
 
 <script>
 import GrupoSillas from '../components/GrupoSillas'
+import OptionChair from '../components/OptionChair'
 
 export default {
   name: 'IndexPage',
   components: {
     GrupoSillas,
+    OptionChair,
   },
   data() {
     return {
@@ -312,6 +315,11 @@ export default {
         { id: 'key', disponible: true },
       ],
     }
+  },
+  computed: {
+    dialog() {
+      return this.$store.state.optionchair.dialog
+    },
   },
   methods: {
     getSillasByName(name) {

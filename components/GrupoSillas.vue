@@ -6,6 +6,7 @@
         :key="indexchair"
         class="col-chair"
         :style="widthCol"
+        @click="showOptions(chair)"
       >
         <div class="numberChair">{{ chair.position }}</div>
         <img v-if="chair.disponible === 3" src="../assets/seat-desahabilitada.png" width="30px" />
@@ -17,6 +18,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
 export default {
   name: 'GrupoSillas',
   props: {
@@ -58,6 +61,14 @@ export default {
     this.createDataMatriz()
   },
   methods: {
+    ...mapMutations({
+      stateDialog: 'optionchair/stateDialog',
+      changeChair: 'optionchair/changeChair',
+    }),
+    showOptions(chair) {
+      this.changeChair(chair)
+      this.stateDialog(true)
+    },
     createDataMatriz() {
       let row = []
       let countChairs = 0
