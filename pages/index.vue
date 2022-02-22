@@ -1,87 +1,389 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>
-            Vuetify is a progressive Material Design component framework for
-            Vue.js. It was designed to empower developers to create amazing
-            applications.
-          </p>
-          <p>
-            For more information on Vuetify, check out the
-            <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation </a
-            >.
-          </p>
-          <p>
-            If you have questions, please join the official
-            <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord </a
-            >.
-          </p>
-          <p>
-            Find a bug? Report it on the github
-            <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board </a
-            >.
-          </p>
-          <p>
-            Thank you for developing with Vuetify and I look forward to bringing
-            more exciting features in the future.
-          </p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3" />
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br />
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="primary" nuxt to="/inspire"> Continue </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div>
+    <h1 class="text-center mb-4">Registro de Asientos</h1>
+
+    <div
+      v-for="(grupo, indexGrupo) in grupos"
+      :key="indexGrupo + 'btn'"
+      class="header-groups"
+      :class="grupo.name"
+    >
+      <v-btn color="amber" outlined>Editar</v-btn>
+    </div>
+    <GrupoSillas
+      v-for="(grupo, indexGrupo) in grupos"
+      :key="indexGrupo"
+      :sillas="getSillasByName(grupo.name)"
+      :rows="grupo.rows"
+      :cols="grupo.cols"
+      :id-chair="grupo.name"
+      :class="grupo.name"
+    />
+    <div
+      v-for="(grupo, indexGrupo) in grupos"
+      :key="indexGrupo + 'footer'"
+      class="footer-groups"
+      :class="grupo.name"
+    >
+      <div>
+        <v-badge :content="countLibres(getSillasByName(grupo.name))" overlap bordered class="mr-3">
+          <img src="../assets/seat-libre.png" alt="" width="35px">
+        </v-badge>
+        Libres
+      </div>
+      <div>
+        <v-badge :content="countOcupadas(getSillasByName(grupo.name))" overlap bordered class="mr-3">
+          <img src="../assets/seat-ocupada.png" alt="" width="35px">
+        </v-badge>
+        Ocupadas
+      </div>
+      <div>
+        <v-badge :content="countDeshabilitadas(getSillasByName(grupo.name))" overlap bordered class="mr-3">
+          <img src="../assets/seat-desahabilitada.png" alt="" width="35px">
+        </v-badge>
+        Deshabilitadas
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+import GrupoSillas from '../components/GrupoSillas'
+
 export default {
   name: 'IndexPage',
+  components: {
+    GrupoSillas,
+  },
+  data() {
+    return {
+      grupos: [
+        { name: 'sillas1', rows: 15, cols: 3 },
+        { name: 'sillas2', rows: 15, cols: 5 },
+        { name: 'sillas3', rows: 15, cols: 5 },
+        { name: 'sillas4', rows: 15, cols: 3 },
+      ],
+      sillas1: [
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: 3 },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: 3 },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+      ],
+      sillas2: [
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+      ],
+      sillas3: [
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+      ],
+      sillas4: [
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+        { id: 'key', disponible: false },
+        { id: 'key', disponible: true },
+      ],
+    }
+  },
+  methods: {
+    getSillasByName(name) {
+      return this[`${name}`]
+    },
+    countLibres(sillas) {
+      const count = sillas.filter((silla) => silla.disponible === true).length
+      return count.toString()
+    },
+    countOcupadas(sillas) {
+      const count = sillas.filter((silla) => silla.disponible === false).length
+      return count.toString()
+    },
+    countDeshabilitadas(sillas) {
+      const count = sillas.filter((silla) => silla.disponible === 3).length
+      return count.toString()
+    },
+  },
 }
 </script>
+
+<style scoped>
+/* .ctainer {
+  background: #e70c0c;
+} */
+
+.sillas1, .sillas4 {
+  position: relative;
+  padding-top: 15px;
+  /* border-radius: 10px; */
+  border-right: 1px solid rgb(93, 93, 93);
+  display: inline-block;
+  /* background: #b6f800; */
+  width: 16%;
+  margin-right: 6%;
+}
+.sillas4 {
+  margin-right: 0px;
+  border-right: 0px solid rgb(93, 93, 93);
+  border-left: 1px solid rgb(93, 93, 93);
+}
+
+.sillas2, .sillas3 {
+  position: relative;
+  padding-top: 15px;
+  /* border-radius: 10px; */
+  border-left: 1px solid rgb(93, 93, 93);
+  border-right: 1px solid rgb(93, 93, 93);
+  display: inline-block;
+  /* background: #0d9b54; */
+  width: 25%;
+  margin-right: 6%;
+}
+
+.header-groups {
+  border-left: 0px solid rgb(93, 93, 93);
+  border-right: 0px solid rgb(93, 93, 93);
+  padding-top: 0px;
+  text-align: center;
+}
+
+.btnEdit {
+  position: absolute;
+  top: -20px;
+  left: center;
+}
+
+.footer-groups {
+  border-radius: 10px;
+  border: 1px solid rgb(93, 93, 93);
+  margin-top: 20px;
+  padding: 10px;
+  padding-top: 15px;
+}
+</style>
