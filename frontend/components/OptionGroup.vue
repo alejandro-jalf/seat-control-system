@@ -21,12 +21,12 @@
 
         <br><br>
 
-        <v-btn outlined color="amber darken-3" block>
+        <v-btn outlined color="amber darken-3" block @click="closeDialog">
           <v-icon>mdi-arrow-left</v-icon>
           Agregar columna a la izquierda
         </v-btn>
         <br>
-        <v-btn outlined color="amber darken-3" block>
+        <v-btn outlined color="amber darken-3" block @click="closeDialog">
           Agregar columna a la derecha
           <v-icon>mdi-arrow-right</v-icon>
         </v-btn>
