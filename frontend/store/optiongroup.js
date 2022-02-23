@@ -1,6 +1,7 @@
 export const state = () => ({
   dialog: false,
-  data: {},
+  data: [],
+  group: {},
 })
 
 export const mutations = {
@@ -9,5 +10,8 @@ export const mutations = {
   },
   changeDataGroup(state, data) {
     state.data = data
+  },
+  setGroup(state, group) {
+    state.group = group
   },
 }

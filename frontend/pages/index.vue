@@ -8,7 +8,7 @@
       class="header-groups"
       :class="grupo.name"
     >
-      <v-btn color="amber" outlined @click="setStatusDialog(true)">Editar</v-btn>
+      <v-btn color="amber" outlined @click="editGroup(grupo)">Editar</v-btn>
     </div>
     <GrupoSillas
       v-for="(grupo, indexGrupo) in grupos"
@@ -380,7 +380,12 @@ export default {
   methods: {
     ...mapMutations({
       setStatusDialog: 'optiongroup/setStatusDialog',
+      setGroup: 'optiongroup/setGroup',
     }),
+    editGroup(group) {
+      this.setGroup(group)
+      this.setStatusDialog(true)
+    },
     getSillasByName(name) {
       return this[`${name}`]
     },

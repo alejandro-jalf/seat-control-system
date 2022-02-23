@@ -17,6 +17,13 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/logoscs.png' }],
   },
 
+  "config": {
+    "nuxt": {
+      "host": "0.0.0.0",
+      "port": "3333"
+    }
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [],
 
