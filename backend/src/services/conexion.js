@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const conexion = (() => {
     let conection = null;
 
-    const dbmssql = (cadenaConexion = '') => {
+    const dbmysql = (cadenaConexion = '') => {
         return new Sequelize(cadenaConexion, {
         pool: { max: 10, min: 0, acquire: 30000, idle: 10000 },
         dialectOptions: {
@@ -21,7 +21,7 @@ const conexion = (() => {
     
     const getConexion = (stringConection = '') => {
         if (stringConection === '') return null;
-        conection = dbmssql(stringConection);
+        conection = dbmysql(stringConection);
         return conection;
     }
 
