@@ -6,8 +6,14 @@ const schemas = (() => {
         password_user: joi.string().min(1).max(150).required()
     });
 
+    const schemaUpdateGroup = joi.object({
+        rows_grupo: joi.number().required(),
+        cols_grupo: joi.number().required()
+    });
+
     return {
         schemaLogin,
+        schemaUpdateGroup,
     }
 })();
 
