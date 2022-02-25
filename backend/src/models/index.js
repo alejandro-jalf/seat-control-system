@@ -140,6 +140,7 @@ const models = (() => {
             conexion.closeConexion();
             return createContentAssert('Asientos creados', result[0]);
         } catch (error) {
+            console.log(error);
             return createContentError(
                 'Fallo la conexion con base de datos al intentar crear los asientos',
                 error

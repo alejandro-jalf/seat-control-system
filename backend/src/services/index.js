@@ -70,14 +70,15 @@ const services = (() => {
         let arrayResult = arrayConsult.map(async (callback) => await callback(cadenaConexion, id_grupo));
 
         const results = await Promise.all(arrayResult);
-        console.log(results);
+        console.log(results, results[0].data, results[1].data);
         const errorFinded = results.find((result) => !result.success);
         if (errorFinded) return createResponse(400, errorFinded);
         if (results[1].data.length === 0)
             return createResponse(400, createContentError('No se encontro el grupo'));
 
-        const rows_diff = results[1].data[0].rows_grupo - bodyGroup.rows_grupo;
-        const cols_diff = results[1].data[0].cols_grupo - bodyGroup.cols_grupo;
+        const rows_diff = bodyGroup.rows_grupo - results[1].data[0].rows_grupo;
+        const cols_diff = bodyGroup.cols_grupo - results[1].data[0].cols_grupo;
+        console.log('rows_diff', rows_diff, 'cols_diff', cols_diff);
 
         if (rows_diff === 0 && cols_diff === 0)
             return createResponse(400, createContentError('El numero de filas y columnas son iguales a los guardados'));
@@ -104,6 +105,7 @@ const services = (() => {
         let valueInsert = '';
         let vueltas = 0;
         if (rows_diff < 0) {
+            console.log('entra a 108');
             for (let index = row_max; index > (row_max + rows_diff); index--) {
                 if (index === row_max) rows_delete += index + ''
                 else rows_delete += ', ' + index
@@ -198,11 +200,13 @@ const services = (() => {
                 }
             }
         } else if (rows_diff > 0) {
+            console.log('entra a 203');
+            vueltas = 0;
             for (let row_create = (row_max + 1); row_create <= (row_max + rows_diff); row_create++) {
                 for (let col_create = col_min; col_create <= col_max; col_create++) {
                     if (vueltas === 0)
-                        valueInsert += '(1, ' + col_create + ', ' + row_create + ', ' + id_grupo + ')'
-                    else valueInsert += ', (1, ' + col_create + ', ' + row_create + ', ' + id_grupo + ')'
+                        valueInsert += '(1, ' + row_create + ', ' + col_create + ', ' + id_grupo + ')'
+                    else valueInsert += ', (1, ' + row_create + ', ' + col_create + ', ' + id_grupo + ')'
                     vueltas++;
                 }
             }
@@ -254,20 +258,24 @@ const services = (() => {
                 if (!result.success) return createResponse(400, result);
                 return createResponse(200, result);
             } else {
-                let vueltas = 0;
+                vueltas = 0;
                 for (let col_create = col_min; col_create <= (col_max + cols_diff); col_create++) {
                     for (let rows_create = row_min; rows_create <= (row_max + rows_diff); rows_create++) {
+                        console.log(col_create, rows_create, `Vueltas: ${vueltas}`);
                         if (col_create <= col_max) {
+                            console.log('Entra col_create <= col_max');
                             if (rows_create > row_max) {
+                                console.log('Entra rows_create > row_max');
                                 if (vueltas === 0)
-                                    valueInsert += '(1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')'
-                                else valueInsert += ', (1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')'
+                                    valueInsert = '(1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')';
+                                else valueInsert += ', (1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')';
                                 vueltas++;
                             }
                         } else {
+                            console.log('Entra else');
                             if (vueltas === 0)
-                                valueInsert += '(1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')'
-                            else valueInsert += ', (1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')'
+                                valueInsert = '(1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')';
+                            else valueInsert += ', (1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')';
                             vueltas++;
                         }
                     }
@@ -283,17 +291,37 @@ const services = (() => {
                 return createResponse(200, result);
             }
         } else {
-            
+            console.log('entra a 289');
+            if (cols_diff < 0) {
+                for (let index = col_max; index > (col_max + cols_diff); index--) {
+                    if (index === col_max) cols_delete += index + ''
+                    else cols_delete += ', ' + index
+                }
+
+                let result = await modelDeleteSeatByCol(cadenaConexion, id_grupo, cols_delete);
+                if (!result.success) return createResponse(400, result);
+
+                result = await modelUpdateGrupo(cadenaConexion, id_grupo, bodyGroup);
+                if (!result.success) return createResponse(400, result);
+                return createResponse(200, result);
+            } else {
+                for (let col_create = (col_max + 1); col_create <= (col_max + cols_diff); col_create++) {
+                    for (let rows_create = row_min; rows_create <= row_max; rows_create++) {
+                        if (vueltas === 0)
+                            valueInsert += '(1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')'
+                        else valueInsert += ', (1, ' + rows_create + ', ' + col_create + ', ' + id_grupo + ')'
+                        vueltas++;
+                    }
+                }
+
+                let result = await modelCreateSeats(cadenaConexion, valueInsert);
+                if (!result.success) return createResponse(400, result);
+
+                result = await modelUpdateGrupo(cadenaConexion, id_grupo, bodyGroup);
+                if (!result.success) return createResponse(400, result);
+                return createResponse(200, result);
+            }
         }
-
-        return createResponse(200, results[1]);
-
-        // let result = await modelUpdateGrupo(cadenaConexion, id_grupo, bodyGroup);
-        // if (!result.success) return createResponse(400, result);
-
-        // if (result.data.length === 0)
-        //     return createResponse(400, createContentError('No se encontro el grupo'));
-        // return createResponse(200, result);
     }
 
     const getSeats = async () => {
