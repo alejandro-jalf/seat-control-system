@@ -60,6 +60,102 @@ const services = (() => {
         return createResponse(200, result);
     }
 
+    const addColRight = async (id_grupo) => {
+        if (!id_grupo) return createResponse(400, createContentError('Grupo invalido'));
+
+        let arrayConsult = [modelGetChairsByIdGrupo, modelGetGroupById];
+        let arrayResult = arrayConsult.map(async (callback) => await callback(cadenaConexion, id_grupo));
+
+        const results = await Promise.all(arrayResult);
+        const errorFinded = results.find((result) => !result.success);
+        if (errorFinded) return createResponse(400, errorFinded);
+        if (results[1].data.length === 0)
+            return createResponse(400, createContentError('No se encontro el grupo'));
+
+        const seats = results[0].data;
+        const gruop = results[1].data[0];
+        let vueltas = 0;
+        let valueInsert = '';
+        let row_max = 1, row_min = 1, col_max = 10, col_min = 10;
+
+        seats.forEach((seat, index) => {
+            if (index === 0) {
+                row_max = seat.row_asiento;
+                row_min = seat.row_asiento;
+                col_max = seat.col_asiento;
+                col_min = seat.col_asiento;
+            } else {
+                if (seat.row_asiento > row_max) row_max = seat.row_asiento;
+                if (seat.row_asiento < row_min) row_min = seat.row_asiento;
+                if (seat.col_asiento > col_max) col_max = seat.col_asiento;
+                if (seat.col_asiento < col_min) col_min = seat.col_asiento;
+            }
+        });
+
+        for (let rows_create = row_min; rows_create <= row_max; rows_create++) {
+            if (vueltas === 0)
+                valueInsert += '(1, ' + rows_create + ', ' + (col_max + 1) + ', ' + id_grupo + ')'
+            else valueInsert += ', (1, ' + rows_create + ', ' + (col_max + 1) + ', ' + id_grupo + ')'
+            vueltas++;
+        }
+
+        let result = await modelCreateSeats(cadenaConexion, valueInsert);
+        if (!result.success) return createResponse(400, result);
+
+        const bodyGroup = { rows_grupo: gruop.rows_grupo, cols_grupo: (gruop.cols_grupo + 1) };
+        result = await modelUpdateGrupo(cadenaConexion, id_grupo, bodyGroup);
+        if (!result.success) return createResponse(400, result);
+        return createResponse(201, result);
+    }
+
+    const addColLeft = async (id_grupo) => {
+        if (!id_grupo) return createResponse(400, createContentError('Grupo invalido'));
+
+        let arrayConsult = [modelGetChairsByIdGrupo, modelGetGroupById];
+        let arrayResult = arrayConsult.map(async (callback) => await callback(cadenaConexion, id_grupo));
+
+        const results = await Promise.all(arrayResult);
+        const errorFinded = results.find((result) => !result.success);
+        if (errorFinded) return createResponse(400, errorFinded);
+        if (results[1].data.length === 0)
+            return createResponse(400, createContentError('No se encontro el grupo'));
+
+        const seats = results[0].data;
+        const gruop = results[1].data[0];
+        let vueltas = 0;
+        let valueInsert = '';
+        let row_max = 1, row_min = 1, col_max = 10, col_min = 10;
+
+        seats.forEach((seat, index) => {
+            if (index === 0) {
+                row_max = seat.row_asiento;
+                row_min = seat.row_asiento;
+                col_max = seat.col_asiento;
+                col_min = seat.col_asiento;
+            } else {
+                if (seat.row_asiento > row_max) row_max = seat.row_asiento;
+                if (seat.row_asiento < row_min) row_min = seat.row_asiento;
+                if (seat.col_asiento > col_max) col_max = seat.col_asiento;
+                if (seat.col_asiento < col_min) col_min = seat.col_asiento;
+            }
+        });
+
+        for (let rows_create = row_min; rows_create <= row_max; rows_create++) {
+            if (vueltas === 0)
+                valueInsert += '(1, ' + rows_create + ', ' + (col_min - 1) + ', ' + id_grupo + ')'
+            else valueInsert += ', (1, ' + rows_create + ', ' + (col_min - 1) + ', ' + id_grupo + ')'
+            vueltas++;
+        }
+
+        let result = await modelCreateSeats(cadenaConexion, valueInsert);
+        if (!result.success) return createResponse(400, result);
+
+        const bodyGroup = { rows_grupo: gruop.rows_grupo, cols_grupo: (gruop.cols_grupo + 1) };
+        result = await modelUpdateGrupo(cadenaConexion, id_grupo, bodyGroup);
+        if (!result.success) return createResponse(400, result);
+        return createResponse(201, result);
+    }
+
     const updateGroup = async (id_grupo, bodyGroup) => {
         if (!id_grupo) return createResponse(400, createContentError('Grupo invalido'));
 
@@ -70,7 +166,6 @@ const services = (() => {
         let arrayResult = arrayConsult.map(async (callback) => await callback(cadenaConexion, id_grupo));
 
         const results = await Promise.all(arrayResult);
-        console.log(results, results[0].data, results[1].data);
         const errorFinded = results.find((result) => !result.success);
         if (errorFinded) return createResponse(400, errorFinded);
         if (results[1].data.length === 0)
@@ -359,6 +454,8 @@ const services = (() => {
         loginUser,
         getGroups,
         getGroup,
+        addColRight,
+        addColLeft,
         updateGroup,
         getSeats,
         getSeatsByIdGrupo,

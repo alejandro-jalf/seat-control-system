@@ -7,6 +7,8 @@ const {
     getSeats,
     getSeatsByIdGrupo,
     updateAviableSeat,
+    addColRight,
+    addColLeft,
 } = require("../services");
 
 router.route('/api/v1').get(async (req, res) => {
@@ -57,6 +59,17 @@ router.route('/api/v1/seats/grupos/:id_grupo').get(async (req, res) => {
     res.status(status).json(response);
 });
 
+router.route('/api/v1/seats/grupos/:id_grupo/right').post(async (req, res) => {
+    const { id_grupo } = req.params;
+    const { status, response } = await addColRight(id_grupo);
+    res.status(status).json(response);
+});
+
+router.route('/api/v1/seats/grupos/:id_grupo/left').post(async (req, res) => {
+    const { id_grupo } = req.params;
+    const { status, response } = await addColLeft(id_grupo);
+    res.status(status).json(response);
+});
 
 router.route('/api/v1/seats/:id_asiento').put(async (req, res) => {
     const { id_asiento } = req.params;
