@@ -9,6 +9,7 @@ const {
     updateAviableSeat,
     addColRight,
     addColLeft,
+    deleteCol,
 } = require("../services");
 
 router.route('/api/v1').get(async (req, res) => {
@@ -34,12 +35,6 @@ router.route('/api/v1/grupos/:id_grupo').get(async (req, res) => {
     const { status, response } = await getGroup(id_grupo);
     res.status(status).json(response);
 });
-
-// router.route('/api/v1/grupos').post(async (req, res) => {
-//     const body = req.body
-//     const { status, response } = await createGroup(body);
-//     res.status(status).json(response);
-// });
 
 router.route('/api/v1/grupos/:id_grupo').put(async (req, res) => {
     const { id_grupo } = req.params;
@@ -71,10 +66,22 @@ router.route('/api/v1/seats/grupos/:id_grupo/left').post(async (req, res) => {
     res.status(status).json(response);
 });
 
-router.route('/api/v1/seats/:id_asiento').put(async (req, res) => {
+router.route('/api/v1/seats/:id_asiento/disponible').put(async (req, res) => {
     const { id_asiento } = req.params;
     const { disponible_asiento } = req.query;
     const { status, response } = await updateAviableSeat(id_asiento, disponible_asiento);
+    res.status(status).json(response);
+});
+
+router.route('/api/v1/seats/grupos/:id_grupo/right').delete(async (req, res) => {
+    const { id_grupo } = req.params;
+    const { status, response } = await deleteCol(id_grupo, 'right');
+    res.status(status).json(response);
+});
+
+router.route('/api/v1/seats/grupos/:id_grupo/left').delete(async (req, res) => {
+    const { id_grupo } = req.params;
+    const { status, response } = await deleteCol(id_grupo, 'left');
     res.status(status).json(response);
 });
 

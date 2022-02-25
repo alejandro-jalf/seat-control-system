@@ -419,6 +419,43 @@ const services = (() => {
         }
     }
 
+    const deleteCol = async (id_grupo, direction = 'right') => {
+        if (!id_grupo) return createResponse(400, createContentError('Grupo invalido'));
+
+        let arrayConsult = [modelGetChairsByIdGrupo, modelGetGroupById];
+        let arrayResult = arrayConsult.map(async (callback) => await callback(cadenaConexion, id_grupo));
+
+        const results = await Promise.all(arrayResult);
+        const errorFinded = results.find((result) => !result.success);
+        if (errorFinded) return createResponse(400, errorFinded);
+        if (results[1].data.length === 0)
+            return createResponse(400, createContentError('No se encontro el grupo'));
+
+        const seats = results[0].data;
+        const gruop = results[1].data[0];
+        let col_max = 10, col_min = 10;
+
+        seats.forEach((seat, index) => {
+            if (index === 0) {
+                col_min = seat.col_asiento;
+                col_max = seat.col_asiento;
+            } else {
+                if (seat.col_asiento < col_min) col_min = seat.col_asiento;
+                if (seat.col_asiento > col_max) col_max = seat.col_asiento;
+            }
+        });
+
+        col_delete = direction === 'right' ? col_max : col_min;
+
+        let result = await modelDeleteSeatByCol(cadenaConexion, id_grupo, col_delete);
+        if (!result.success) return createResponse(400, result);
+
+        const bodyGroup = { rows_grupo: gruop.rows_grupo, cols_grupo: (gruop.cols_grupo - 1) };
+        result = await modelUpdateGrupo(cadenaConexion, id_grupo, bodyGroup);
+        if (!result.success) return createResponse(400, result);
+        return createResponse(200, result);
+    }
+
     const getSeats = async () => {
         const result = await modelGetChairs(cadenaConexion);
         if (!result.success) return createResponse(400, result);
@@ -458,6 +495,7 @@ const services = (() => {
         addColLeft,
         updateGroup,
         getSeats,
+        deleteCol,
         getSeatsByIdGrupo,
         updateAviableSeat,
     }
