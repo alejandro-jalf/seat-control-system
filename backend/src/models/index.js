@@ -94,6 +94,23 @@ const models = (() => {
         }
     }
 
+    const modelGetChairsByIdAsiento = async (cadenaConexion = '', id_asiento) => {
+        try {
+            const accessToDataBase = conexion.getConexion(cadenaConexion);
+            const result = await accessToDataBase.query(
+                `SELECT * FROM asientos WHERE id_asiento = ${id_asiento}`,
+                QueryTypes.SELECT
+            );
+            conexion.closeConexion();
+            return createContentAssert('Asientos encontrados', result[0]);
+        } catch (error) {
+            return createContentError(
+                'Fallo la conexion con base de datos al intentar obtener el asiento por id asiento',
+                error
+            );
+        }
+    }
+
     const modelGetChairsByIdGrupo = async (cadenaConexion = '', id_grupo) => {
         try {
             const accessToDataBase = conexion.getConexion(cadenaConexion);
@@ -166,12 +183,11 @@ const models = (() => {
         }
     }
 
-    const modelDeleteSeatByRow = async (cadenaConexion = '', id_grupo, bodySeat) => {
+    const modelDeleteSeatByRow = async (cadenaConexion = '', id_grupo, rows_asiento) => {
         try {
-            const { row_asiento } = bodySeat;
             const accessToDataBase = conexion.getConexion(cadenaConexion);
             const result = await accessToDataBase.query(
-                `DELETE FROM asientos WHERE grupo_asiento = ${id_grupo} AND row_asiento = ${row_asiento}`,
+                `DELETE FROM asientos WHERE grupo_asiento = ${id_grupo} AND row_asiento IN (${rows_asiento})`,
                 QueryTypes.DELETE
             );
             conexion.closeConexion();
@@ -184,12 +200,11 @@ const models = (() => {
         }
     }
 
-    const modelDeleteSeatByCol = async (cadenaConexion = '', id_grupo, bodySeat) => {
+    const modelDeleteSeatByCol = async (cadenaConexion = '', id_grupo, cols_asiento) => {
         try {
-            const { col_asiento } = bodySeat;
             const accessToDataBase = conexion.getConexion(cadenaConexion);
             const result = await accessToDataBase.query(
-                `DELETE FROM asientos WHERE grupo_asiento = ${id_grupo} AND col_asiento = ${col_asiento}`,
+                `DELETE FROM asientos WHERE grupo_asiento = ${id_grupo} AND col_asiento IN (${cols_asiento})`,
                 QueryTypes.DELETE
             );
             conexion.closeConexion();
@@ -208,6 +223,7 @@ const models = (() => {
         modelGetGroupById,
         modelUpdateGrupo,
         modelGetChairs,
+        modelGetChairsByIdAsiento,
         modelGetChairsByIdGrupo,
         modelCreateSeats,
         modelDeleteSeat,
