@@ -21,6 +21,24 @@
 
         <br><br>
 
+        <v-btn outlined color="red lighten-4" block class="mb-2" @click="changeAviableAll(0)">
+          <v-icon>mdi-seat</v-icon>
+          <span v-if="width > 434"> Ocupar todas </span>
+          <span v-else> Ocupar </span>
+        </v-btn>
+        <v-btn outlined color="lime lighten-1" block class="mb-2" @click="changeAviableAll(1)">
+          <v-icon>mdi-seat</v-icon>
+          <span v-if="width > 434"> Liberar todas </span>
+          <span v-else> Liberar </span>
+        </v-btn>
+        <v-btn outlined color="blue-grey lighten-4" block @click="changeAviableAll(2)">
+          <v-icon>mdi-seat</v-icon>
+          <span v-if="width > 434"> Deshabilitar todas </span>
+          <span v-else> Deshab. </span>
+        </v-btn>
+
+        <br><br>
+
         <v-btn outlined color="amber darken-3" block class="mb-2" @click="addColRight">
           <span v-if="width > 434"> Agregar columna a la derecha </span>
           <span v-else> <v-icon>mdi-table-column-plus-after</v-icon> </span>
@@ -202,7 +220,6 @@ export default {
         if (response.data.success) {
           await this.getSeats()
           await this.getGroups()
-          this.showAlertDialog([response.data.message, 'Exito', 'success'])
         } else
           this.showAlertDialog([response.data.message])
       } catch (error) {
@@ -225,7 +242,6 @@ export default {
         if (response.data.success) {
           await this.getSeats()
           await this.getGroups()
-          this.showAlertDialog([response.data.message, 'Exito', 'success'])
         } else
           this.showAlertDialog([response.data.message])
       } catch (error) {
@@ -248,7 +264,6 @@ export default {
         if (response.data.success) {
           await this.getSeats()
           await this.getGroups()
-          this.showAlertDialog([response.data.message, 'Exito', 'success'])
         } else
           this.showAlertDialog([response.data.message])
       } catch (error) {
@@ -271,7 +286,28 @@ export default {
         if (response.data.success) {
           await this.getSeats()
           await this.getGroups()
-          this.showAlertDialog([response.data.message, 'Exito', 'success'])
+        } else
+          this.showAlertDialog([response.data.message])
+      } catch (error) {
+        this.setLoading(false)
+        if (error.response)
+          this.showAlertDialog([error.response.data.message])
+        else
+          this.showAlertDialog(['Error con el servidor de base de datos', 'Advertencia', 'danger'])
+      }
+    },
+    async changeAviableAll(aviable) {
+      this.setStatusDialog(false)
+      try {
+        this.setLoading(true)
+        const response = await this.$axios({
+          url: `http://localhost:5000/api/v1/seats/grupos/ ${this.group.id_grupo}/disponible?disponible_asiento=${aviable}`,
+          method: 'put',
+        })
+        this.setLoading(false)
+        if (response.data.success) {
+          await this.getSeats()
+          await this.getGroups()
         } else
           this.showAlertDialog([response.data.message])
       } catch (error) {
