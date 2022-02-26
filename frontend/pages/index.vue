@@ -2,10 +2,12 @@
   <div>
     <div class="mb-5">
       <v-checkbox
+      v-model="updateActumatically"
         label="Actualizar cada 30s"
         color="amber"
         hide-details
         class="mb-3 mr-3 display-ib"
+        @change="startStopTemp"
       >
       </v-checkbox>
       <v-btn
@@ -13,6 +15,7 @@
         outlined
         :block="width < 400"
         class="display-ib"
+        @click="reloadData"
       >
         <v-icon>mdi-refresh</v-icon>
         Refrescar informacion
@@ -22,7 +25,7 @@
     <br><br>
 
     <div v-if="editingGroup && width <= 699" class="sillas-movil">
-      <div class="text-h5 text-center">{{ group.name.toUpperCase() }}</div>
+      <div class="text-h5 text-center">{{ group.name_grupo.toUpperCase() }}</div>
       <v-btn
         color="green"
         outlined
@@ -40,33 +43,46 @@
         />
     </div>
     <div v-else>
-      <div
-        v-for="(grupo, indexGrupo) in grupos"
-        :key="indexGrupo + 'btn'"
-        class="header-groups"
-        :class="grupo.name_grupo"
-      >
-        <v-btn
-          :small="width < 350"
-          color="amber"
-          outlined
-          @click="editGroup(grupo)"
+      <div v-if="!isInvitedUser">
+        <div
+          v-for="(grupo, indexGrupo) in gruposForHeader"
+          :key="indexGrupo + 'btn'"
+          class="header-groups"
+          :class="grupo.name_grupo"
         >
-          <v-icon>mdi-pencil</v-icon>
-          <span v-if="width > 699"> Editar </span>
-        </v-btn>
+          <v-btn
+            :small="width < 350"
+            color="amber"
+            outlined
+            @click="editGroup(grupo)"
+          >
+            <v-icon>mdi-pencil</v-icon>
+            <span v-if="width > 699"> Editar </span>
+          </v-btn>
+        </div>
       </div>
 
       <div v-if="width > 699">
-        <GrupoSillas
-          v-for="(grupo, indexGrupo) in grupos"
-          :key="indexGrupo"
-          :sillas="getSillasByName(grupo.name_grupo)"
-          :rows="grupo.rows_grupo"
-          :cols="grupo.cols_grupo"
-          :id-chair="grupo.name_grupo"
-          :class="grupo.name_grupo"
-        />
+        <div v-if="loading">
+          <v-card
+            v-for="(grupo, indexGrupo) in grupos"
+            :key="indexGrupo"
+            height="400px"
+            min-width="100px"
+            :class="grupo.name_grupo"
+          ></v-card>
+        </div>
+        <div v-else>
+          <GrupoSillas
+            v-for="(grupo, indexGrupo) in grupos"
+            :key="indexGrupo"
+            :sillas="getSillasByName(grupo.name_grupo)"
+            :rows="grupo.rows_grupo"
+            :cols="grupo.cols_grupo"
+            :id-chair="grupo.name_grupo"
+            :class="grupo.name_grupo"
+          />
+        </div>
       </div>
       <div v-else>
         <div
@@ -93,7 +109,7 @@
       </div>
 
       <div
-        v-for="(grupo, indexGrupo) in grupos"
+        v-for="(grupo, indexGrupo) in gruposForDetails"
         :key="indexGrupo + 'footer'"
         class="footer-groups"
         :class="grupo.name_grupo"
@@ -175,18 +191,24 @@ export default {
   },
   data() {
     return {
-      grupos1: [
-        { name: 'sillas1', rows: 15, cols: 3 },
-        { name: 'sillas2', rows: 15, cols: 5 },
-        { name: 'sillas3', rows: 15, cols: 5 },
-        { name: 'sillas4', rows: 15, cols: 3 },
-      ],
       sillas11: [
         { id: 'key', disponible: true },
       ],
+      updateActumatically: false,
+      temporizador: null,
     }
   },
   computed: {
+    isInvitedUser() {
+      const tipo = this.$store.state.general.dataUser.data || {data: [{ tipo_user: 'invited' }]}
+      return tipo.data[0].tipo_user === 'invited'
+    },
+    dataUser() {
+      return this.$store.state.general.dataUser.data.data
+    },
+    loading() {
+      return this.$store.state.general.loading > 0
+    },
     sillas1() {
       return Object.values(this.$store.state.general.dataSeats.data).filter((seat) => seat.grupo_asiento === 1)
     },
@@ -202,6 +224,12 @@ export default {
     grupos() {
       return this.$store.state.general.dataGrupos.data
     },
+    gruposForDetails() {
+      return this.$store.state.general.dataGrupos.data
+    },
+    gruposForHeader() {
+      return this.$store.state.general.dataGrupos.data
+    },
     group() {
       return this.$store.state.optiongroup.group
     },
@@ -215,34 +243,25 @@ export default {
       return this.$store.state.optiongroup.editingGroup
     },
     disponibles() {
-      const grupos = this.$store.state.general.dataGrupos.data
-      console.log('disponibles', grupos, this.$store.state.general.dataGrupos);
-      const all = grupos.reduce((acumGruop, group) => {
-        const listSeats = [ ...this.getSillasByName(group.name_grupo) ]
-        const count = listSeats.filter((silla) => silla.disponible === true).length
-        acumGruop += count
+      const seats = this.$store.state.general.dataSeats.data
+      const all = seats.reduce((acumGruop, seat) => {
+        if (seat.disponible_asiento === 1) acumGruop++
         return acumGruop
       }, 0)
       return all.toString()
     },
     ocupadas() {
-      const grupos = this.$store.state.general.dataGrupos.data
-      console.log('ocupadas', grupos);
-      const all = grupos.reduce((acumGruop, group) => {
-        const listSeats = [ ...this.getSillasByName(group.name_grupo) ]
-        const count = listSeats.filter((silla) => silla.disponible === false).length
-        acumGruop += count
+      const seats = this.$store.state.general.dataSeats.data
+      const all = seats.reduce((acumGruop, seat) => {
+        if (seat.disponible_asiento === 0) acumGruop++
         return acumGruop
       }, 0)
       return all.toString()
     },
     deshabilitadas() {
-      const grupos = this.$store.state.general.dataGrupos.data
-      console.log('deshabilitadas', grupos);
-      const all = grupos.reduce((acumGruop, group) => {
-        const listSeats = [ ...this.getSillasByName(group.name_grupo) ]
-        const count = listSeats.filter((silla) => silla.disponible === 3).length
-        acumGruop += count
+      const seats = this.$store.state.general.dataSeats.data
+      const all = seats.reduce((acumGruop, seat) => {
+        if (seat.disponible_asiento === 2) acumGruop++
         return acumGruop
       }, 0)
       return all.toString()
@@ -252,9 +271,7 @@ export default {
     },
   },
   mounted() {
-    console.log(this.$store.state.general.dataGrupos);
-    this.getGroups()
-    this.getSeats()
+    this.reloadData()
   },
   methods: {
     ...mapMutations({
@@ -267,6 +284,26 @@ export default {
       getGroups: 'general/getGroups',
       getSeats: 'general/getSeats',
     }),
+    startStopTemp(start) {
+      if (start) this.startTemporizador()
+      else this.stopTemporizador()
+    },
+    startTemporizador() {
+      const timer = () => {
+        this.reloadData()
+        setTimeout(this.temporizador, 30000)
+      }
+      this.temporizador = timer
+      this.temporizador()
+    },
+    stopTemporizador() {
+      clearTimeout(this.temporizador)
+      this.temporizador = null
+    },
+    async reloadData() {
+      await this.getSeats()
+      await this.getGroups()
+    },
     showGroup(group) {
       this.setEditingGroup(true)
       this.setGroup(group)
@@ -279,15 +316,15 @@ export default {
       return this[`${name}`]
     },
     countLibres(sillas) {
-      const count = sillas.filter((silla) => silla.disponible === true).length
+      const count = sillas.filter((silla) => silla.disponible_asiento === 1).length
       return count.toString()
     },
     countOcupadas(sillas) {
-      const count = sillas.filter((silla) => silla.disponible === false).length
+      const count = sillas.filter((silla) => silla.disponible_asiento === 0).length
       return count.toString()
     },
     countDeshabilitadas(sillas) {
-      const count = sillas.filter((silla) => silla.disponible === 3).length
+      const count = sillas.filter((silla) => silla.disponible_asiento === 2).length
       return count.toString()
     },
   },

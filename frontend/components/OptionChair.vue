@@ -40,7 +40,7 @@
         <v-btn
           color="light-green accent-3"
           text
-          @click="closeDialog()"
+          @click="saveChanges()"
         >
           Guardar
         </v-btn>
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 
 export default {
   data() {
@@ -61,6 +61,7 @@ export default {
         { icon: 'mdi-checkbox-marked-circle', text: 'Ocupado', checked: true },
         { icon: '', text: 'Deshabilitado', checked: false },
       ],
+      positionSeat: 0,
     }
   },
   computed: {
@@ -78,6 +79,12 @@ export default {
   methods: {
     ...mapMutations({
       stateDialog: 'optionchair/stateDialog',
+      setLoading: 'general/setLoading',
+      showAlertDialog: 'general/showAlertDialog',
+    }),
+    ...mapActions({
+      getSeats: 'general/getSeats',
+      getGroups: 'general/getGroups',
     }),
     selectedOption(position) {
       this.items.forEach((option) => { option.icon = '' })
@@ -85,10 +92,10 @@ export default {
     },
     loadOptions(chair) {
       let selected = ''
-      if (chair.disponible === true) {
+      if (chair.disponible_asiento === 1) {
         selected = 'Disponible'
         this.selectedItem = 0
-      } else if (chair.disponible === false) {
+      } else if (chair.disponible_asiento === 0) {
         selected = 'Ocupado'
         this.selectedItem = 1
       } else {
@@ -107,6 +114,30 @@ export default {
       if (position === 0) return 'green lighten-4'
       if (position === 1) return 'red lighten-4'
       return 'cyan lighten-4'
+    },
+    async saveChanges() {
+      this.stateDialog(false)
+      try {
+        const idSeat = this.chair.id_asiento
+        const statusNew = this.selectedItem === 0 ? 1 : this.selectedItem === 1 ? 0 : 2
+        this.setLoading(true)
+        const response = await this.$axios({
+          url: `http://localhost:5000/api/v1/seats/${idSeat}/disponible?disponible_asiento=${statusNew}`,
+          method: 'put',
+        })
+        this.setLoading(false)
+        if (response.data.success) {
+          await this.getSeats()
+          await this.getGroups()
+        } else
+          this.showAlertDialog([response.data.message])
+      } catch (error) {
+        this.setLoading(false)
+        if (error.response)
+          this.showAlertDialog([error.response.data.message])
+        else
+          this.showAlertDialog(['Error con el servidor de base de datos', 'Advertencia', 'danger'])
+      }
     },
   },
 }

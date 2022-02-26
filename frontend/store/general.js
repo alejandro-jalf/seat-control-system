@@ -5,13 +5,13 @@ export const state = () => ({
   width: 0,
   loading: 0,
   login: localStorage.getItem('scs_login'),
-  dataUser: !localStorage.getItem('scs_data_user')
+  dataUser: localStorage.getItem('scs_data_user')
     ? JSON.parse(localStorage.getItem('scs_data_user'))
     : { data: [] },
-  dataGrupos: !localStorage.getItem('scs_data_grupos')
+  dataGrupos: localStorage.getItem('scs_data_grupos')
     ? JSON.parse(localStorage.getItem('scs_data_grupos'))
     : { data: [] },
-  dataSeats: !localStorage.getItem('scs_data_seats')
+  dataSeats: localStorage.getItem('scs_data_seats')
     ? JSON.parse(localStorage.getItem('scs_data_seats'))
     : { data: [] },
   alert: {
@@ -20,11 +20,15 @@ export const state = () => ({
     message: 'Error en la solicitud',
     type: 'warning',
   },
+  widtSeat: 0,
 })
 
 export const mutations = {
   setWidth(state, width) {
     state.width = width
+  },
+  setWidtSeat(state, widtSeat) {
+    if (widtSeat < state.widtSeat) state.widtSeat = widtSeat
   },
   setLoading(state, loading) {
     if (loading) state.loading++

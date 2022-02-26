@@ -19,3 +19,5 @@ export const mutations = {
     state.editingGroup = editingGroup
   },
 }
+
+export const actions = {}
