@@ -1,5 +1,6 @@
 <template>
   <v-app dark>
+    <AlertDialog v-if="show" />
     <v-overlay :absolute="false" :value="loading" color="grey lighten-2">
       <v-progress-circular
         indeterminate
@@ -12,6 +13,13 @@
         <img src="../assets/logoscs.png" alt="" width="30px">
         Sistema de Control de Asientos
       </v-app-bar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn icon class="mr-3" @click="logout($router)">
+        <v-icon>mdi-account-circle</v-icon>
+        Salir
+      </v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
@@ -25,18 +33,25 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations ,mapActions } from 'vuex'
+import AlertDialog from '../components/AlertDialog'
 
 export default {
   name: 'DefaultLayout',
+  components: {
+    AlertDialog,
+  },
   data() {
     return {
       fixed: false,
     }
   },
   computed: {
+    show() {
+      return this.$store.state.general.alert.show
+    },
     loading() {
-      return this.$store.state.general.loading
+      return this.$store.state.general.loading > 0
     },
   },
   mounted() {
@@ -50,6 +65,9 @@ export default {
     ...mapMutations({
       setWidth: 'general/setWidth',
       setLoading: 'general/setLoading',
+    }),
+    ...mapActions({
+      logout: 'general/logout',
     }),
   },
 }

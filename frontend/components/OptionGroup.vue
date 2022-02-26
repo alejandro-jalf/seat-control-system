@@ -1,7 +1,7 @@
 <template>
   <v-dialog :value="true" persistent max-width="390" width="390">
     <v-card>
-      <v-card-title class="text-h5">
+      <v-card-title class="text-h6">
         Datos de Grupo "{{ group.name }}"
       </v-card-title>
 
@@ -23,11 +23,33 @@
 
         <v-btn outlined color="amber darken-3" block @click="closeDialog">
           <v-icon>mdi-arrow-left</v-icon>
-          Agregar columna a la izquierda
+          <span v-if="width > 434"> Agregar columna a la izquierda </span>
+          <span v-else> <v-icon>mdi-table-column-plus-before</v-icon> </span>
         </v-btn>
         <br>
         <v-btn outlined color="amber darken-3" block @click="closeDialog">
-          Agregar columna a la derecha
+          <span v-if="width > 434"> Agregar columna a la derecha </span>
+          <span v-else> <v-icon>mdi-table-column-plus-after</v-icon> </span>
+          <v-icon>mdi-arrow-right</v-icon>
+        </v-btn>
+
+        <br><br>
+
+        <v-btn outlined color="red accent-2" block @click="closeDialog">
+          <v-icon>mdi-arrow-left</v-icon>
+          <span v-if="width > 434"> Borrar columna de la izquierda </span>
+          <span v-else>
+            <v-icon>mdi-trash-can-outline</v-icon>
+            <v-icon>mdi-table-column</v-icon>
+          </span>
+        </v-btn>
+        <br>
+        <v-btn outlined color="red accent-2" block @click="closeDialog">
+          <span v-if="width > 434"> Borrar columna de la derecha </span>
+          <span v-else>
+            <v-icon>mdi-table-column</v-icon>
+            <v-icon>mdi-trash-can-outline</v-icon>
+          </span>
           <v-icon>mdi-arrow-right</v-icon>
         </v-btn>
       </v-card-text>
@@ -60,6 +82,9 @@ import { mapMutations } from 'vuex'
 
 export default {
   computed: {
+    width() {
+      return this.$store.state.general.width
+    },
     dialog() {
       return this.$store.state.optiongroup.dialog
     },
