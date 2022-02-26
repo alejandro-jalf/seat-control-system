@@ -10,7 +10,8 @@
 
     <v-app-bar fixed app>
       <v-app-bar-title>
-        <img src="../assets/logoscs.png" alt="" width="30px">
+        <!-- <img src="../assets/logoscs.png" alt="" width="30px"> -->
+        <v-icon large>mdi-seat</v-icon>
         Sistema de Control de Asientos
       </v-app-bar-title>
 

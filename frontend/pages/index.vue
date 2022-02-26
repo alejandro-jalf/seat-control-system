@@ -33,10 +33,10 @@
         Cerrar
       </v-btn>
       <GrupoSillas
-          :sillas="getSillasByName(group.name)"
-          :rows="group.rows"
-          :cols="group.cols"
-          :id-chair="group.name"
+          :sillas="getSillasByName(group.name_grupo)"
+          :rows="group.rows_grupo"
+          :cols="group.cols_grupo"
+          :id-chair="group.name_grupo"
         />
     </div>
     <div v-else>
@@ -44,7 +44,7 @@
         v-for="(grupo, indexGrupo) in grupos"
         :key="indexGrupo + 'btn'"
         class="header-groups"
-        :class="grupo.name"
+        :class="grupo.name_grupo"
       >
         <v-btn
           :small="width < 350"
@@ -61,18 +61,18 @@
         <GrupoSillas
           v-for="(grupo, indexGrupo) in grupos"
           :key="indexGrupo"
-          :sillas="getSillasByName(grupo.name)"
-          :rows="grupo.rows"
-          :cols="grupo.cols"
-          :id-chair="grupo.name"
-          :class="grupo.name"
+          :sillas="getSillasByName(grupo.name_grupo)"
+          :rows="grupo.rows_grupo"
+          :cols="grupo.cols_grupo"
+          :id-chair="grupo.name_grupo"
+          :class="grupo.name_grupo"
         />
       </div>
       <div v-else>
         <div
           v-for="(grupo, indexGrupo) in grupos"
           :key="indexGrupo"
-          :class="grupo.name"
+          :class="grupo.name_grupo"
           class="group-icon"
           @click="showGroup(grupo)"
         >
@@ -80,10 +80,10 @@
           <span v-else> S{{ indexGrupo + 1 }} </span>
           <br>
           <span v-if="width > 561">
-            Cols = {{ grupo.cols }} <br>
-            Rows = {{ grupo.rows }}
+            Cols = {{ grupo.cols_grupo }} <br>
+            Rows = {{ grupo.rows_grupo }}
           </span>
-          <span v-else class="card"> {{ grupo.cols }} X {{ grupo.rows }} </span>
+          <span v-else class="card"> {{ grupo.cols_grupo }} X {{ grupo.rows_grupo }} </span>
 
           <br>
           <v-icon color="light-green accent-2" large>
@@ -96,11 +96,11 @@
         v-for="(grupo, indexGrupo) in grupos"
         :key="indexGrupo + 'footer'"
         class="footer-groups"
-        :class="grupo.name"
+        :class="grupo.name_grupo"
       >
         <div class="mt-2">
           <v-badge
-            :content="countLibres(getSillasByName(grupo.name))"
+            :content="countLibres(getSillasByName(grupo.name_grupo))"
             overlap
             bordered
             class="mr-3"
@@ -111,7 +111,7 @@
         </div>
         <div class="mt-2">
           <v-badge
-            :content="countOcupadas(getSillasByName(grupo.name))"
+            :content="countOcupadas(getSillasByName(grupo.name_grupo))"
             overlap
             bordered
             class="mr-3"
@@ -122,7 +122,7 @@
         </div>
         <div class="mt-2">
           <v-badge
-            :content="countDeshabilitadas(getSillasByName(grupo.name))"
+            :content="countDeshabilitadas(getSillasByName(grupo.name_grupo))"
             overlap
             bordered
             class="mr-3"
@@ -161,7 +161,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 import GrupoSillas from '../components/GrupoSillas'
 import OptionChair from '../components/OptionChair'
 import OptionGroup from '../components/OptionGroup'
@@ -175,263 +175,33 @@ export default {
   },
   data() {
     return {
-      grupos: [
+      grupos1: [
         { name: 'sillas1', rows: 15, cols: 3 },
         { name: 'sillas2', rows: 15, cols: 5 },
         { name: 'sillas3', rows: 15, cols: 5 },
         { name: 'sillas4', rows: 15, cols: 3 },
       ],
-      sillas1: [
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: 3 },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: 3 },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-      ],
-      sillas2: [
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-      ],
-      sillas3: [
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-      ],
-      sillas4: [
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
-        { id: 'key', disponible: true },
-        { id: 'key', disponible: false },
+      sillas11: [
         { id: 'key', disponible: true },
       ],
     }
   },
   computed: {
+    sillas1() {
+      return Object.values(this.$store.state.general.dataSeats.data).filter((seat) => seat.grupo_asiento === 1)
+    },
+    sillas2() {
+      return Object.values(this.$store.state.general.dataSeats.data).filter((seat) => seat.grupo_asiento === 2)
+    },
+    sillas3() {
+      return Object.values(this.$store.state.general.dataSeats.data).filter((seat) => seat.grupo_asiento === 3)
+    },
+    sillas4() {
+      return Object.values(this.$store.state.general.dataSeats.data).filter((seat) => seat.grupo_asiento === 4)
+    },
+    grupos() {
+      return this.$store.state.general.dataGrupos.data
+    },
     group() {
       return this.$store.state.optiongroup.group
     },
@@ -445,8 +215,10 @@ export default {
       return this.$store.state.optiongroup.editingGroup
     },
     disponibles() {
-      const all = this.grupos.reduce((acumGruop, group) => {
-        const listSeats = [ ...this.getSillasByName(group.name) ]
+      const grupos = this.$store.state.general.dataGrupos.data
+      console.log('disponibles', grupos, this.$store.state.general.dataGrupos);
+      const all = grupos.reduce((acumGruop, group) => {
+        const listSeats = [ ...this.getSillasByName(group.name_grupo) ]
         const count = listSeats.filter((silla) => silla.disponible === true).length
         acumGruop += count
         return acumGruop
@@ -454,8 +226,10 @@ export default {
       return all.toString()
     },
     ocupadas() {
-      const all = this.grupos.reduce((acumGruop, group) => {
-        const listSeats = [ ...this.getSillasByName(group.name) ]
+      const grupos = this.$store.state.general.dataGrupos.data
+      console.log('ocupadas', grupos);
+      const all = grupos.reduce((acumGruop, group) => {
+        const listSeats = [ ...this.getSillasByName(group.name_grupo) ]
         const count = listSeats.filter((silla) => silla.disponible === false).length
         acumGruop += count
         return acumGruop
@@ -463,8 +237,10 @@ export default {
       return all.toString()
     },
     deshabilitadas() {
-      const all = this.grupos.reduce((acumGruop, group) => {
-        const listSeats = [ ...this.getSillasByName(group.name) ]
+      const grupos = this.$store.state.general.dataGrupos.data
+      console.log('deshabilitadas', grupos);
+      const all = grupos.reduce((acumGruop, group) => {
+        const listSeats = [ ...this.getSillasByName(group.name_grupo) ]
         const count = listSeats.filter((silla) => silla.disponible === 3).length
         acumGruop += count
         return acumGruop
@@ -475,12 +251,21 @@ export default {
       return this.$store.state.general.width
     },
   },
+  mounted() {
+    console.log(this.$store.state.general.dataGrupos);
+    this.getGroups()
+    this.getSeats()
+  },
   methods: {
     ...mapMutations({
       setStatusDialog: 'optiongroup/setStatusDialog',
       setGroup: 'optiongroup/setGroup',
       setEditingGroup: 'optiongroup/setEditingGroup',
       setLoading: 'general/setLoading',
+    }),
+    ...mapActions({
+      getGroups: 'general/getGroups',
+      getSeats: 'general/getSeats',
     }),
     showGroup(group) {
       this.setEditingGroup(true)

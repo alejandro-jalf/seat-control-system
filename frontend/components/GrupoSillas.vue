@@ -9,8 +9,8 @@
         @click="showOptions(chair)"
       >
         <div class="numberChair">{{ chair.position }}</div>
-        <img v-if="chair.disponible === 3" src="../assets/seat-desahabilitada.png" width="30px" />
-        <img v-else-if="chair.disponible" src="../assets/seat-libre.png" width="30px" />
+        <img v-if="chair.disponible_asiento === 2" src="../assets/seat-desahabilitada.png" width="30px" />
+        <img v-else-if="chair.disponible_asiento === 1" src="../assets/seat-libre.png" width="30px" />
         <img v-else src="../assets/seat-ocupada.png" width="30px" />
       </v-col>
     </div>
@@ -114,7 +114,10 @@ export default {
 .numberChair {
   position: absolute;
   top: 25%;
-  left: 40%;
+  left: 0px;
+  width: 100%;
+  height: 75%;
+  text-align: center;
   color: aliceblue;
   font-size: 12px;
 }

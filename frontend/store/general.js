@@ -5,9 +5,15 @@ export const state = () => ({
   width: 0,
   loading: 0,
   login: localStorage.getItem('scs_login'),
-  dataUser: localStorage.getItem('scs_data_user') || { data: [] },
-  dataGrupos: localStorage.getItem('scs_data_grupos') || { data: [] },
-  dataSeats: localStorage.getItem('scs_data_seats') || { data: [] },
+  dataUser: !localStorage.getItem('scs_data_user')
+    ? JSON.parse(localStorage.getItem('scs_data_user'))
+    : { data: [] },
+  dataGrupos: !localStorage.getItem('scs_data_grupos')
+    ? JSON.parse(localStorage.getItem('scs_data_grupos'))
+    : { data: [] },
+  dataSeats: !localStorage.getItem('scs_data_seats')
+    ? JSON.parse(localStorage.getItem('scs_data_seats'))
+    : { data: [] },
   alert: {
     show: false,
     title: 'Arvertencia',
@@ -83,12 +89,13 @@ export const actions = {
         return error.response.data
       }
       return {
-        case: 'Error fatal',
-        error,
+        success: false,
+        message: 'Error con el servidor de base de datos',
+        data: error
       }
     }
   },
-  async getGroups({ commit }, [user, password]) {
+  async getGroups({ commit }) {
     try {
       commit('setLoading', true)
       const response = await this.$axios({
@@ -107,12 +114,13 @@ export const actions = {
         return error.response.data
       }
       return {
-        case: 'Error fatal',
-        error,
+        success: false,
+        message: 'Error con el servidor de base de datos',
+        data: error
       }
     }
   },
-  async getSeats({ commit }, [user, password]) {
+  async getSeats({ commit }) {
     try {
       commit('setLoading', true)
       const response = await this.$axios({
