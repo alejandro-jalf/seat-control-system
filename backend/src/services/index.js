@@ -15,6 +15,7 @@ const {
     modelDeleteSeatByRow,
     modelDeleteSeatByCol,
     modelCreateSeats,
+    modelUpdateAviableSeatsByIdGroup,
 } = require("../models");
 const {
     validateBodyLogin,
@@ -487,6 +488,17 @@ const services = (() => {
         return createResponse(200, result);
     }
 
+    const updateAviableSeatsByIdGroup = async (id_grupo, disponible_asiento) => {
+        if (!id_grupo) return createResponse(400, createContentError('Grupo invalido'));
+        let validate = validateDisponibleAsiento(disponible_asiento);
+        if (!validate.success) return createResponse(400, validate);
+
+        const result = await modelUpdateAviableSeatsByIdGroup(cadenaConexion, id_grupo, disponible_asiento);
+        if (!result.success) return createResponse(400, result);
+
+        return createResponse(200, result);
+    }
+
     return {
         loginUser,
         getGroups,
@@ -498,6 +510,7 @@ const services = (() => {
         deleteCol,
         getSeatsByIdGrupo,
         updateAviableSeat,
+        updateAviableSeatsByIdGroup,
     }
 })();
 

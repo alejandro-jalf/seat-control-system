@@ -10,6 +10,7 @@ const {
     addColRight,
     addColLeft,
     deleteCol,
+    updateAviableSeatsByIdGroup,
 } = require("../services");
 
 router.route('/api/v1').get(async (req, res) => {
@@ -63,6 +64,13 @@ router.route('/api/v1/seats/grupos/:id_grupo/right').post(async (req, res) => {
 router.route('/api/v1/seats/grupos/:id_grupo/left').post(async (req, res) => {
     const { id_grupo } = req.params;
     const { status, response } = await addColLeft(id_grupo);
+    res.status(status).json(response);
+});
+
+router.route('/api/v1/seats/grupos/:id_grupo/disponible').put(async (req, res) => {
+    const { id_grupo } = req.params;
+    const { disponible_asiento } = req.query;
+    const { status, response } = await updateAviableSeatsByIdGroup(id_grupo, disponible_asiento);
     res.status(status).json(response);
 });
 

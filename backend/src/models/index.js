@@ -167,6 +167,25 @@ const models = (() => {
         }
     }
 
+    const modelUpdateAviableSeatsByIdGroup = async (cadenaConexion = '', id_grupo, disponible_asiento) => {
+        try {
+            const accessToDataBase = conexion.getConexion(cadenaConexion);
+            const result = await accessToDataBase.query(
+                `UPDATE asientos
+                SET disponible_asiento = ${disponible_asiento}
+                WHERE grupo_asiento = ${id_grupo}`,
+                QueryTypes.UPDATE
+            );
+            conexion.closeConexion();
+            return createContentAssert('Estatus de los asientos actualizados', result[0]);
+        } catch (error) {
+            return createContentError(
+                'Fallo la conexion con base de datos al intentar actualizar la disponibilidad de los asientos',
+                error
+            );
+        }
+    }
+
     const modelDeleteSeat = async (cadenaConexion = '', id_asiento) => {
         try {
             const accessToDataBase = conexion.getConexion(cadenaConexion);
@@ -231,6 +250,7 @@ const models = (() => {
         modelDeleteSeatByRow,
         modelDeleteSeatByCol,
         modelUpdateAviableSeat,
+        modelUpdateAviableSeatsByIdGroup,
     }
 })();
 
