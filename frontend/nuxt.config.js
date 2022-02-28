@@ -4,6 +4,11 @@ export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
 
+  server: {
+    host: '0.0.0.0',
+    port: '3333',
+  },
+
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'Seat Control System',
@@ -85,4 +90,8 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {},
+
+  env: {
+    scs_route_base: process.env.SCS_ROUTE_BASE,
+  },
 }

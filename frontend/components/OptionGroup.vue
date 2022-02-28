@@ -101,6 +101,7 @@ export default {
     return {
       cols: 0,
       rows: 0,
+      source: 'http://' + process.env.scs_route_base,
     }
   },
   computed: {
@@ -186,7 +187,7 @@ export default {
       try {
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/grupos/` + this.group.id_grupo,
+          url: `${this.source}:5000/api/v1/grupos/${this.group.id_grupo}`,
           method: 'put',
           data: {
             cols_grupo: this.cols,
@@ -213,7 +214,7 @@ export default {
       try {
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/seats/grupos/` + this.group.id_grupo + '/right',
+          url: `${this.source}:5000/api/v1/seats/grupos/${this.group.id_grupo}/right`,
           method: 'post',
         })
         this.setLoading(false)
@@ -235,7 +236,7 @@ export default {
       try {
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/seats/grupos/` + this.group.id_grupo + '/left',
+          url: `${this.source}:5000/api/v1/seats/grupos/${this.group.id_grupo}/left`,
           method: 'post',
         })
         this.setLoading(false)
@@ -257,7 +258,7 @@ export default {
       try {
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/seats/grupos/` + this.group.id_grupo + '/right',
+          url: `${this.source}:5000/api/v1/seats/grupos/${this.group.id_grupo}/right`,
           method: 'delete',
         })
         this.setLoading(false)
@@ -279,7 +280,7 @@ export default {
       try {
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/seats/grupos/` + this.group.id_grupo + '/left',
+          url: `${this.source}:5000/api/v1/seats/grupos/${this.group.id_grupo}/left`,
           method: 'delete',
         })
         this.setLoading(false)
@@ -301,7 +302,7 @@ export default {
       try {
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/seats/grupos/ ${this.group.id_grupo}/disponible?disponible_asiento=${aviable}`,
+          url: `${this.source}:5000/api/v1/seats/grupos/${this.group.id_grupo}/disponible?disponible_asiento=${aviable}`,
           method: 'put',
         })
         this.setLoading(false)

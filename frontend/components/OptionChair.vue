@@ -118,11 +118,12 @@ export default {
     async saveChanges() {
       this.stateDialog(false)
       try {
+        const source = 'http://' + process.env.scs_route_base
         const idSeat = this.chair.id_asiento
         const statusNew = this.selectedItem === 0 ? 1 : this.selectedItem === 1 ? 0 : 2
         this.setLoading(true)
         const response = await this.$axios({
-          url: `http://localhost:5000/api/v1/seats/${idSeat}/disponible?disponible_asiento=${statusNew}`,
+          url: `${source}:5000/api/v1/seats/${idSeat}/disponible?disponible_asiento=${statusNew}`,
           method: 'put',
         })
         this.setLoading(false)

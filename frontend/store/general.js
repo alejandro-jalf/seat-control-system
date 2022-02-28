@@ -73,8 +73,9 @@ export const mutations = {
 export const actions = {
   async initSesion({ commit }, [user, password]) {
     try {
+      const source = 'http://' + process.env.scs_route_base
       const response = await this.$axios({
-        url: `http://localhost:5000/api/v1/users/login`,
+        url: `${source}:5000/api/v1/users/login`,
         method: 'post',
         data: {
           nombre_user: user,
@@ -101,9 +102,10 @@ export const actions = {
   },
   async getGroups({ commit }) {
     try {
+      const source = 'http://' + process.env.scs_route_base
       commit('setLoading', true)
       const response = await this.$axios({
-        url: `http://localhost:5000/api/v1/grupos`,
+        url: `${source}:5000/api/v1/grupos`,
         method: 'get',
       })
       commit('setLoading', false)
@@ -126,9 +128,10 @@ export const actions = {
   },
   async getSeats({ commit }) {
     try {
+      const source = 'http://' + process.env.scs_route_base
       commit('setLoading', true)
       const response = await this.$axios({
-        url: `http://localhost:5000/api/v1/seats`,
+        url: `${source}:5000/api/v1/seats`,
         method: 'get',
       })
       commit('setLoading', false)

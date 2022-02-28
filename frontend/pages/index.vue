@@ -35,12 +35,18 @@
         <v-icon>mdi-close-circle</v-icon>
         Cerrar
       </v-btn>
+      <v-card
+        v-if="loading"
+        height="400px"
+        min-width="100px"
+      ></v-card>
       <GrupoSillas
-          :sillas="getSillasByName(group.name_grupo)"
-          :rows="group.rows_grupo"
-          :cols="group.cols_grupo"
-          :id-chair="group.name_grupo"
-        />
+        v-else
+        :sillas="getSillasByName(group.name_grupo)"
+        :rows="group.rows_grupo"
+        :cols="group.cols_grupo"
+        :id-chair="group.name_grupo"
+      />
     </div>
     <div v-else>
       <div v-if="!isInvitedUser">
