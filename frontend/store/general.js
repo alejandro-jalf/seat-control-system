@@ -21,6 +21,8 @@ export const state = () => ({
     type: 'warning',
   },
   widtSeat: 0,
+  widthContainerMain: 0,
+  numberMaxCols: 0,
 })
 
 export const mutations = {
@@ -29,6 +31,12 @@ export const mutations = {
   },
   setWidtSeat(state, widtSeat) {
     if (widtSeat < state.widtSeat) state.widtSeat = widtSeat
+  },
+  setNumberMaxCols(state, numberMaxCols) {
+    if (numberMaxCols > state.numberMaxCols) state.numberMaxCols = numberMaxCols
+  },
+  setWidthContainerMain(state, widthContainerMain) {
+    state.widthContainerMain = widthContainerMain
   },
   setLoading(state, loading) {
     if (loading) state.loading++

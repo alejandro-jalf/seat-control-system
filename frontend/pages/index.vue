@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div id="container-main">
     <div class="mb-5">
       <v-checkbox
       v-model="updateActumatically"
-        label="Actualizar cada 30s"
+        label="Actualizar cada 10s"
         color="amber"
         hide-details
         class="mb-3 mr-3 display-ib"
@@ -68,7 +68,7 @@
         </div>
       </div>
 
-      <div v-if="width > 699">
+      <div v-if="width > 699" class="ct-group-seats">
         <div v-if="loading">
           <v-card
             v-for="(grupo, indexGrupo) in grupos"
@@ -278,6 +278,11 @@ export default {
   },
   mounted() {
     this.reloadData()
+    const containerMain = document.getElementById('container-main')
+    this.setWidthContainerMain(containerMain.clientWidth)
+    window.addEventListener('resize', () => {
+      this.setWidthContainerMain(containerMain.clientWidth)
+    })
   },
   methods: {
     ...mapMutations({
@@ -285,6 +290,7 @@ export default {
       setGroup: 'optiongroup/setGroup',
       setEditingGroup: 'optiongroup/setEditingGroup',
       setLoading: 'general/setLoading',
+      setWidthContainerMain: 'general/setWidthContainerMain',
     }),
     ...mapActions({
       getGroups: 'general/getGroups',
@@ -297,7 +303,7 @@ export default {
     startTemporizador() {
       const timer = () => {
         this.reloadData()
-        setTimeout(this.temporizador, 30000)
+        setTimeout(this.temporizador, 10000)
       }
       this.temporizador = timer
       this.temporizador()
@@ -338,6 +344,7 @@ export default {
 </script>
 
 <style scoped>
+
 .display-ib {
   display: inline-block;
 }
@@ -348,31 +355,47 @@ export default {
   border: 1px solid rgb(93, 93, 93);
 }
 
+.ct-group-seats {
+  position: relative;
+}
+
 .sillas1, .sillas4 {
   position: relative;
   padding-top: 15px;
   border-right: 1px solid rgb(93, 93, 93);
   display: inline-block;
   width: 16%;
-  margin-right: 6%;
+  margin-right: 5%;
 }
 .sillas4 {
+  position: absolute;
+  top: 0px;
+  left: 83%;
+
   margin-right: 0px;
   border-right: 0px solid rgb(93, 93, 93);
   border-left: 1px solid rgb(93, 93, 93);
 }
 
 .sillas2, .sillas3 {
-  position: relative;
+  position: absolute;
+  top: 0px;
+  left: 21%;
+
   padding-top: 15px;
   border-left: 1px solid rgb(93, 93, 93);
   border-right: 1px solid rgb(93, 93, 93);
   display: inline-block;
-  width: 25%;
-  margin-right: 6%;
+  width: 26%;
+  margin-right: 5%;
+}
+.sillas3 {
+  left: 52%;
 }
 
 .group-icon {
+  position: relative;
+  left: 0%;
   background: #0288D1;
   margin-top: 15px;
   border: 1px solid rgb(93, 93, 93);
@@ -396,10 +419,12 @@ export default {
 }
 
 .header-groups {
+  position: relative;
   border-left: 0px solid rgb(93, 93, 93);
   border-right: 0px solid rgb(93, 93, 93);
   padding-top: 0px;
   text-align: center;
+  left: 0%;
 }
 
 .btnEdit {
@@ -409,11 +434,14 @@ export default {
 }
 
 .footer-groups {
+  position: relative;
   border-radius: 10px;
   border: 1px solid rgb(93, 93, 93);
   margin-top: 20px;
   padding: 10px;
   padding-top: 15px;
+
+  left: 0%;
 }
 
 .resultAll {

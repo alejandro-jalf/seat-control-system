@@ -9,9 +9,9 @@
         @click="showOptions(chair)"
       >
         <div class="numberChair">{{ chair.position }}</div>
-        <img v-if="chair.disponible_asiento === 2" src="../assets/seat-desahabilitada.png" width="30px" />
-        <img v-else-if="chair.disponible_asiento === 1" src="../assets/seat-libre.png" width="30px" />
-        <img v-else src="../assets/seat-ocupada.png" width="30px" />
+        <img v-if="chair.disponible_asiento === 2" src="../assets/seat-desahabilitada.png" :width="widthSeat" />
+        <img v-else-if="chair.disponible_asiento === 1" src="../assets/seat-libre.png" :width="widthSeat" />
+        <img v-else src="../assets/seat-ocupada.png" :width="widthSeat" />
       </v-col>
     </div>
   </div>
@@ -43,6 +43,8 @@ export default {
   data() {
     return {
       data: [],
+      colsDiff: 0,
+      rowsDiff: 0,
     }
   },
   computed: {
@@ -56,11 +58,14 @@ export default {
       const width = 'width:' + parseInt(100 / this.cols) + '%;'
       return width
     },
-    widthImage() {
-      const ct = document.getElementById(this.idChair)
-      const porcentaje = parseInt(100 / this.cols) / 100
-      const width = porcentaje * ct.clientWidth
-      return (width - 2) + 'px'
+    widthSeat() {
+      const divisor = this.$store.state.general.width <= 699 ? 1 : 4
+      const colsMax = this.$store.state.general.numberMaxCols
+      const widthContainer = this.$store.state.general.widthContainerMain
+      const widthSeat = (widthContainer / divisor) / colsMax
+      if (divisor === 1 && widthSeat > 35)
+        return 35 + 'px'
+      return parseInt(widthSeat - 4) + 'px'
     },
   },
   mounted() {
@@ -70,6 +75,7 @@ export default {
     ...mapMutations({
       stateDialog: 'optionchair/stateDialog',
       changeChair: 'optionchair/changeChair',
+      setNumberMaxCols: 'general/setNumberMaxCols',
     }),
     showOptions(chair) {
       if (this.isInvitedUser) return false
@@ -77,8 +83,6 @@ export default {
       this.stateDialog(true)
     },
     createDataMatriz() {
-      let row = []
-      const data = []
       let countChairs = 0
       let rowMax = 1;
       let rowMin = 1;
@@ -100,17 +104,27 @@ export default {
       });
       const rowsTotal = (rowMax - rowMin) + 1
       const colsTotal = (colMax - colMin) + 1
-      for (let rows = 1; rows <= rowsTotal; rows++) {
-        for (let cols = 1; cols <= colsTotal; cols++) {
-          const rowChair = { ...this.sillas[countChairs] }
-          rowChair.position = countChairs + 1
-          row.push(rowChair)
-          countChairs++
+      this.rowsDiff = rowsTotal
+      this.colsDiff = colsTotal
+      this.setNumberMaxCols(colsTotal)
+      let seatsSort = [ ...this.sillas ]
+      seatsSort.sort((a,b) => a.row_asiento < b.row_asiento ? -1 : 1)
+      let groupSeat = []
+      seatsSort = seatsSort.reduce((acumSeat, seat, indexSeat) => {
+        groupSeat.push(seat)
+        seat.position = indexSeat + 1
+        countChairs = (indexSeat + 2) - colsTotal
+        if (indexSeat > 0 && (indexSeat + 1)%colsTotal === 0) {
+          groupSeat.sort((a, b) => a.col_asiento < b.col_asiento ? -1 : 1)
+          groupSeat.forEach((seat, indexS) => {
+            seat.position = countChairs + indexS
+          })
+          acumSeat.push(groupSeat)
+          groupSeat = []
         }
-        data.push(row)
-        row = []
-      }
-      this.data = data
+        return acumSeat
+      }, [])
+      this.data = seatsSort
     },
   },
 }
@@ -136,6 +150,11 @@ export default {
   display: inline-block;
   padding: 0px;
   text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: pointer;
   /* background: rgba(255, 255, 255, 0.267); */
   /* border: 1px solid rgb(165, 202, 1); */
 }

@@ -36,14 +36,6 @@
         >
           Cerrar
         </v-btn>
-
-        <v-btn
-          color="light-green accent-3"
-          text
-          @click="saveChanges()"
-        >
-          Guardar
-        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -89,6 +81,7 @@ export default {
     selectedOption(position) {
       this.items.forEach((option) => { option.icon = '' })
       this.items[position].icon = 'mdi-checkbox-marked-circle'
+      this.saveChanges(position)
     },
     loadOptions(chair) {
       let selected = ''
@@ -115,12 +108,12 @@ export default {
       if (position === 1) return 'red lighten-4'
       return 'cyan lighten-4'
     },
-    async saveChanges() {
+    async saveChanges(position) {
       this.stateDialog(false)
       try {
         const source = 'http://' + process.env.scs_route_base
         const idSeat = this.chair.id_asiento
-        const statusNew = this.selectedItem === 0 ? 1 : this.selectedItem === 1 ? 0 : 2
+        const statusNew = position === 0 ? 1 : position === 1 ? 0 : 2
         this.setLoading(true)
         const response = await this.$axios({
           url: `${source}:5000/api/v1/seats/${idSeat}/disponible?disponible_asiento=${statusNew}`,
