@@ -1,10 +1,27 @@
 <template>
   <div :id="idChair" class="con-main">
+    <v-checkbox
+      v-model="selectSeats"
+      label="Seleccionar"
+      color="green"
+      hide-details
+      class="mb-4 display-ib"
+      @change="setSelectSeat"
+    ></v-checkbox>
+    <v-btn
+      v-if="selectSeats"
+      color="lime accent-2"
+      icon
+      class="mb-4 display-ib"
+    >
+      <v-icon>mdi-dots-vertical</v-icon>
+    </v-btn>
     <div v-for="(row, indexrow) in refactorData" :key="indexrow" class="row-chair">
       <v-col
         v-for="(chair, indexchair) in row"
         :key="indexchair"
         class="col-chair"
+        :class="isSelectedChair(chair)"
         :style="widthCol"
         @click="showOptions(chair)"
       >
@@ -45,6 +62,8 @@ export default {
       data: [],
       colsDiff: 0,
       rowsDiff: 0,
+      selectSeats: false,
+      chairsSelected: [1],
     }
   },
   computed: {
@@ -77,10 +96,25 @@ export default {
       changeChair: 'optionchair/changeChair',
       setNumberMaxCols: 'general/setNumberMaxCols',
     }),
+    setSelectSeat(select) {
+      if (!select) this.chairsSelected = []
+    },
+    isSelectedChair(seat) {
+      const findSeat = this.chairsSelected.find((position) => position === seat.position)
+      if (findSeat) return 'selectedSeat'
+    },
     showOptions(chair) {
       if (this.isInvitedUser) return false
-      this.changeChair(chair)
-      this.stateDialog(true)
+      if (this.selectSeats) {
+        const findSeat = this.chairsSelected.find((position) => position === chair.position)
+        if (findSeat) {
+          const chairsFilter = this.chairsSelected.filter((seat) => seat !== chair.position)
+          this.chairsSelected = chairsFilter
+        } else this.chairsSelected.push(chair.position)
+      } else {
+        this.changeChair(chair)
+        this.stateDialog(true)
+      }
     },
     createDataMatriz() {
       let countChairs = 0
@@ -131,6 +165,14 @@ export default {
 </script>
 
 <style scoped>
+.selectedSeat {
+  background: rgb(0, 85, 85);
+}
+
+.display-ib {
+  display: inline-block;
+}
+
 .con-main {
   margin-top: 15px;
   /* background: rgb(8, 123, 177); */
